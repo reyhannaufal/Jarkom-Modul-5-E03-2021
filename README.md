@@ -10,7 +10,7 @@ Daftar Kelompok:
 
 ### Topologi
 
-![topo](https://user-images.githubusercontent.com/54606856/145667765-c31ad444-0981-4541-b15e-11539fb73e06.png)
+![praktikum-modul5](https://user-images.githubusercontent.com/54606856/145667908-5f76a72b-afde-47b3-9eac-87652949e707.jpg)
 
 ### VLSM Tree
 
