@@ -6,16 +6,25 @@ Daftar Kelompok:
 2. Vicky Thirdian - 05111940000211
 3. Fiodhy Ardito Narawangsa - 05111940000218
 
-## Subnetting & Routing
+## Subnetting & Routing (VLSM)
+
+### Topologi
+
+![topo](https://user-images.githubusercontent.com/54606856/145667765-c31ad444-0981-4541-b15e-11539fb73e06.png)
+
+### VLSM Tree
+
+![praktikum-modul5 - t](https://user-images.githubusercontent.com/54606856/145667771-ad754b09-ec92-462b-9d29-a7a2bf0b94d6.jpg)
 
 ### Foosha
+
 ```
 auto eth0
 iface eth0 inet static
  address 192.168.122.2
  netmask 255.255.255.252
  gateway 192.168.122.1
-     
+
 auto eth1
 iface eth1 inet static
  address 192.201.7.145
@@ -26,7 +35,9 @@ iface eth2 inet static
  address 192.201.7.149
  netmask 255.255.255.252
 ```
+
 ### Water7
+
 ```
 auto eth0
 iface eth0 inet static
@@ -49,7 +60,9 @@ iface eth3 inet static
  address 192.201.7.129
  netmask 255.255.255.248
 ```
+
 ### Guanhou
+
 ```
 auto eth0
 iface eth0 inet static
@@ -72,7 +85,9 @@ iface eth3 inet static
  address 192.201.6.1
  netmask 255.255.255.0
 ```
+
 ### Jipangu
+
 ```
 auto eth0
 iface eth0 inet static
@@ -80,7 +95,9 @@ iface eth0 inet static
  netmask 255.255.255.248
  gateway 192.201.7.129
 ```
+
 ### Doriki
+
 ```
 auto eth0
 iface eth0 inet static
@@ -88,7 +105,9 @@ iface eth0 inet static
  netmask 255.255.255.248
  gateway 192.201.7.129
 ```
+
 ### Maingate
+
 ```
 auto eth0
 iface eth0 inet static
@@ -96,7 +115,9 @@ iface eth0 inet static
  netmask 255.255.255.248
  gateway 192.201.7.137
 ```
+
 ### Jorge
+
 ```
 auto eth0
 iface eth0 inet static
@@ -104,7 +125,9 @@ iface eth0 inet static
  netmask 255.255.255.248
  gateway 192.201.7.137
 ```
+
 ### Routing
+
 ```
 route add -net 192.201.6.0 netmask 255.255.255.0 gw 192.201.7.150
 route add -net 192.201.7.128 netmask 255.255.255.248 gw 192.201.7.146
@@ -113,42 +136,43 @@ route add -net 192.201.0.0 netmask 255.255.252.0 gw 192.201.7.146
 route add -net 192.201.4.0 netmask 255.255.254.0 gw 192.201.7.150
 route add -net 192.201.7.136 netmask 255.255.255.248 gw 192.201.7.150
 ```
+
 ## Soal & Penyelesaian
 
 1. Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Foosha menggunakan iptables, tetapi Luffy tidak ingin menggunakan MASQUERADE.
-    ```
-    iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
-    ```
-    ```
-    Keterangan:
-    - 
-    ```
+   ```
+   iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
+   ```
+   ```
+   Keterangan:
+   -
+   ```
 2. Kalian diminta untuk mendrop semua akses HTTP dari luar Topologi kalian pada server yang merupakan DHCP Server dan DNS Server demi menjaga keamanan.
-    ```
-    iptables -A FORWARD -i eth0 -p tcp --dport 80 -d 192.201.7.128/29 -j DROP
-    ```
-    ```
-    Keterangan:
-    - A FORWARD: Menggunakan chain FORWARD
-    - -i eth0: Paket masuk dari eth0 Foosha
-    - -P tcp: Mendifinisikan protokol yang digunakan yaitu TCP
-    - --dport 80: Paket yang masuk dari port 80 (HTTP)
-    - -j DROP: Paket di drop
-    ```
+   ```
+   iptables -A FORWARD -i eth0 -p tcp --dport 80 -d 192.201.7.128/29 -j DROP
+   ```
+   ```
+   Keterangan:
+   - A FORWARD: Menggunakan chain FORWARD
+   - -i eth0: Paket masuk dari eth0 Foosha
+   - -P tcp: Mendifinisikan protokol yang digunakan yaitu TCP
+   - --dport 80: Paket yang masuk dari port 80 (HTTP)
+   - -j DROP: Paket di drop
+   ```
 3. Karena kelompok kalian maksimal terdiri dari 3 orang. Luffy meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 3 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
-    ```
-    iptables -A INPUT -s 192.201.7.0/25, 192.201.0.0/22 -m time --timestart 07:00 --timestop 15:00 --weekdays Mon,Tue,Wed,Thu -j ACCEPT
-    iptables -A INPUT -s 192.201.7.0/25, 192.201.0.0/22 -J REJECT
-    ```
+   ```
+   iptables -A INPUT -s 192.201.7.0/25, 192.201.0.0/22 -m time --timestart 07:00 --timestop 15:00 --weekdays Mon,Tue,Wed,Thu -j ACCEPT
+   iptables -A INPUT -s 192.201.7.0/25, 192.201.0.0/22 -J REJECT
+   ```
 4. Akses dari subnet Blueno dan Cipher hanya diperbolehkan pada pukul 07.00 - 15.00 pada hari Senin sampai Kamis.
-    ```
-    iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
-    ```
+   ```
+   iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
+   ```
 5. Akses dari subnet Elena dan Fukuro hanya diperbolehkan pada pukul 15.01 hingga pukul 06.59 setiap harinya.
-    ```
-    iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
-    ```
+   ```
+   iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
+   ```
 6. Karena kita memiliki 2 Web Server, Luffy ingin Guanhao disetting sehingga setiap request dari client yang mengakses DNS Server akan didistribusikan secara bergantian pada Jorge dan Maingate
-    ```
-    iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
-    ```
+   ```
+   iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
+   ```
