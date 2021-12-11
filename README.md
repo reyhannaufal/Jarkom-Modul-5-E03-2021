@@ -143,6 +143,7 @@ route add -net 192.201.7.136 netmask 255.255.255.248 gw 192.201.7.150
    ```
    iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.2 -s 192.201.0.0/16
    ```
+   ```
    Keterangan:
    - -t nat: Menggunakan tabel NAT karena akan mengubah alamat asal dari paket
    - -A POSTROUTING: Menggunakan chain POSTROUTING karena mengubah asal paket setelah routing
@@ -151,6 +152,10 @@ route add -net 192.201.7.136 netmask 255.255.255.248 gw 192.201.7.150
    - -j SNAT: Menggunakan target SNAT untuk mengubah source atau alamat asal dari paket
    - --to-source (ip eth0): Mendefinisikan IP source.
    ```
+   Bukti :
+   
+   ![no1](https://user-images.githubusercontent.com/73778173/145672683-7404e12c-d021-4f49-b25f-4e9eb60679d5.jpeg)
+   
 2. Kalian diminta untuk mendrop semua akses HTTP dari luar Topologi kalian pada server yang merupakan DHCP Server dan DNS Server demi menjaga keamanan.
    ```
    iptables -A FORWARD -i eth0 -p tcp --dport 80 -d 192.201.7.128/29 -j DROP
@@ -163,6 +168,10 @@ route add -net 192.201.7.136 netmask 255.255.255.248 gw 192.201.7.150
    - --dport 80: Paket yang masuk dari port 80 (HTTP)
    - -j DROP: Paket di drop
    ```
+   Bukti :
+   
+   ![no2](https://user-images.githubusercontent.com/73778173/145672702-d9f0b72a-bbf4-46cc-9bdb-9b76e31cd14e.jpeg)
+
 3. Karena kelompok kalian maksimal terdiri dari 3 orang. Luffy meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 3 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
    ```
    iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
@@ -175,16 +184,28 @@ route add -net 192.201.7.136 netmask 255.255.255.248 gw 192.201.7.150
    - --connlimit-mask 0 : Hanya memperbolehkan 3 koneksi setiap subnet dalam satu waktu
    -  -j DROP: Paket di-drop
    ```
+   Bukti :
+   
+   ![no3](https://user-images.githubusercontent.com/73778173/145672731-52d75d6e-dc08-43cf-b9dc-a1561b54c66e.jpeg)
+
 4. Akses dari subnet Blueno dan Cipher hanya diperbolehkan pada pukul 07.00 - 15.00 pada hari Senin sampai Kamis.
    ```
    iptables -A INPUT -s 192.201.7.0/25,192.201.0.0/22 -m time --timestart 07:00 --timestop 15:00 --weekdays Mon,Tue,Wed,Thu -j ACCEPT
    iptables -A INPUT -s 192.201.7.0/25,192.201.0.0/22 -j REJECT
    ```
+   Bukti :
+   
+   ![no4](https://user-images.githubusercontent.com/73778173/145672740-7bbfdd9d-6595-4385-92c9-46135963c449.jpeg)
+
 5. Akses dari subnet Elena dan Fukuro hanya diperbolehkan pada pukul 15.01 hingga pukul 06.59 setiap harinya.
    ```
    iptables -A INPUT -s 192.201.4.0/23,192.201.6.0/24 -m time --timestart 15:01 --timestop 06:59 -j ACCEPT
    iptables -A INPUT -s 192.201.4.0/23,192.201.6.0/24  -m time --timestart 07:00 --timestop 15:00 -j REJECT
    ```
+   Bukti :
+   
+   ![no5](https://user-images.githubusercontent.com/73778173/145672745-c859281c-4c79-4ec2-9a4d-fa3132bd50ff.jpeg)
+
 6. Karena kita memiliki 2 Web Server, Luffy ingin Guanhao disetting sehingga setiap request dari client yang mengakses DNS Server akan didistribusikan secara bergantian pada Jorge dan Maingate
    ```
    iptables -A PREROUTING -t nat -p tcp -d 192.201.7.128/29 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.201.7.138
@@ -192,3 +213,7 @@ route add -net 192.201.7.136 netmask 255.255.255.248 gw 192.201.7.150
    iptables -t nat -A POSTROUTING -p tcp -d 192.201.7.138 -j SNAT --to-source 192.201.7.128
    iptables -t nat -A POSTROUTING -p tcp -d 192.201.7.139 -j SNAT --to-source 192.201.7.128
    ```
+   Bukti : 
+   
+   ![no6](https://user-images.githubusercontent.com/73778173/145672750-2cf973db-5560-4109-afd7-dee892841586.jpeg)
+
